@@ -1,0 +1,42 @@
+* {
+	font-size: 12px;
+}
+
+ul {
+	-moz-column-width: 250px;
+	-moz-column-gap: 10px;
+	padding: 0;
+	margin: 0;
+}
+
+li {
+	padding: 3px 10px;
+	list-style-type: none;
+	text-transform: uppercase;
+	background: #eee;
+}
+
+li:nth-of-type(2n-1) {
+	background: #ccc;
+}
+
+a {
+	color: #333;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+li.new {
+	background: #9f9;
+}
+
+li.new a {
+	font-weight: bold;
+}
+
+li.old a {
+	color: #999;
+}

@@ -1,0 +1,25 @@
+About
+
+KoKaGrabber is a simple project to grab the event list from koka36.de and
+mark newly added events for a better overview. It updates in a maximum
+frequency of three hours and marks events added in the last 24 hours or
+since last visit.
+
+
+Requirements
+
+The tool uses phpQuery to scrape the events from an HTML page. You can
+install that from the PEAR repository using
+
+  pear channel-discover phpquery-pear.appspot.com
+  pear install phpquery/phpQuery
+
+Also it uses SQLite as database backend. On Debian Linux this can be
+installed by calling
+
+  apt-get install php5-sqlite
+
+
+Legal
+
+KoKaGrabber is distributed under the GPL, see LICENSE.
