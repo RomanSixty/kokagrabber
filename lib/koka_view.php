@@ -40,8 +40,9 @@ class koka_view extends SQLite3
 			$html = file_get_contents ( DIR . '/templates/listentry.html' );
 
 		$replacements = array (
-			'%%%LINK%%%'    => $event [ 'link' ],
-			'%%%ARTIST%%%'  => $event [ 'artist' ],
+			'%%%ID%%%'      => $event [ 'id'      ],
+			'%%%LINK%%%'    => $event [ 'link'    ],
+			'%%%ARTIST%%%'  => $event [ 'artist'  ],
 			'%%%CLASSES%%%' => $event [ 'classes' ]
 		);
 
@@ -55,20 +56,25 @@ class koka_view extends SQLite3
 
 		$res = $this -> query ( 'SELECT * FROM koka_events ORDER BY artist ASC' );
 
+		// Favoriten
+		$kh = new koka_hilight();
+		$hilights = $kh -> getHilights();
+
 		while ( $event = $res -> fetchArray ( SQLITE3_ASSOC ) )
 		{
 			$classes = array();
 
 			// set classes depending on timestamps
 			// everything newer than 24hours ago OR the last visit date is marked as "new"
-			$classes[] = ( min ( $last_visit, time() - 3*3600 ) <= $event [ 'createdate' ] )
-					   ? 'new'
-					   : '';
+			if ( min ( $last_visit, time() - 3*3600 ) <= $event [ 'createdate' ] )
+				$classes[] = 'new';
 
 			// everything with last seen date older than 3 hours ago is marked as "old"
-			$classes[] = ( time() - 3*3600 > $event [ 'lastseendate' ] )
-					   ? ' old'
-					   : '';
+			if ( time() - 3*3600 > $event [ 'lastseendate' ] )
+				$classes[] = 'old';
+
+			if ( in_array ( $event [ 'id' ], $hilights ) )
+				$classes[] = 'hilight';
 
 			$event [ 'classes' ] = implode ( ' ', $classes );
 

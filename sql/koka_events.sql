@@ -12,3 +12,5 @@ CREATE TABLE IF NOT EXISTS koka_settings (
 	skey TEXT,
 	sval TEXT
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS setting ON koka_settings (skey);

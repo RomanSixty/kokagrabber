@@ -12,6 +12,7 @@ header {
 	top: 0;
 	box-shadow: 0 0 7px 0 rgba(0, 0, 0, .3);
 	background: #f6f6f6;
+	z-index: 5;
 }
 
 header:after {
@@ -68,14 +69,45 @@ a:hover {
 	text-decoration: underline;
 }
 
+.events li {
+	position: relative;
+	padding-left: 10px;
+}
+
+.events li:before {
+	content: '';
+	position: absolute;
+	left: 0;
+	width: 10px;
+	top: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, .3);
+	cursor: pointer;
+	border-right: 1px solid #fff;
+}
+
 li.new {
 	background: #9f9;
 }
 
+li.new:before {
+	background: #0c0;
+}
+
+li.hilight a,
 li.new a {
 	font-weight: bold;
 }
 
 li.old a {
 	color: #999;
+}
+
+li.hilight {
+	background: #f96;
+}
+
+li.hilight:before,
+li:hover:before {
+	background: #c00;
 }
