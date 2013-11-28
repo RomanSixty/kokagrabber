@@ -1,14 +1,16 @@
 $(function(){
-	$('#filter_new').click(function(){
-		if ( $(this).hasClass('active') )
+	$('#filter_new a').click(function(){
+		if ( $(this).parent().hasClass('active') )
 		{
-			$(this).removeClass('active');
+			$(this).parent().removeClass('active');
 			$('.events li').show()();
 		}
 		else
 		{
-			$(this).addClass('active');
+			$(this).parent().addClass('active');
 			$('.events li:not(.new)').hide();
 		}
+
+		return false;
 	});
 });
