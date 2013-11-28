@@ -1,6 +1,41 @@
 * {
 	font-size: 12px;
+	padding: 0;
+	margin: 0;
 }
+
+header {
+	padding: 10px;
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 0;
+	box-shadow: 0 0 7px 0 rgba(0, 0, 0, .3);
+	background: #fff;
+}
+
+header:after {
+	content:"";
+	clear: both;
+	display: block;
+}
+
+header h1 {
+	float: left;
+	font-size: 20px;
+	margin-right: 20px;
+	vertical-align: middle;
+	font-family: sans-serif;
+}
+
+.filters li {
+	cursor: pointer;
+}
+
+.filters li.active {
+	outline: 2px solid #c00;
+}
+
 
 ul {
 	-moz-column-width: 250px;
@@ -9,11 +44,18 @@ ul {
 	margin: 0;
 }
 
+ul.events {
+	margin-top: 50px;
+}
+
 li {
 	padding: 3px 10px;
 	list-style-type: none;
 	text-transform: uppercase;
 	background: #eee;
+	max-width: 250px;
+	overflow: hidden;
+	margin-bottom: 1px;
 }
 
 li:nth-of-type(2n-1) {
