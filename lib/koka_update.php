@@ -30,23 +30,41 @@ class koka_update extends SQLite3
 
 	private function getKokaEvents()
 	{
-		$all_events = file_get_contents ( 'http://www.koka36.de/showevents.php' );
-		#$all_events = file_get_contents ( DIR . '/showevents.php' );
+		$events = false;
 
-		$events = array();
+		$url = 'http://www.koka36.de/events.php?kategorie=Rock%2FPop+%26+More';
 
-		phpQuery::newDocument ( $all_events );
-
-		foreach ( pq ( 'a.tipps' ) as $event )
+		while ( true )
 		{
-			$link   = pq ( $event ) -> attr ( 'href' );
-			$artist = trim ( pq ( $event ) -> html() );
+			$all_events = file_get_contents ( $url );
 
-			// sometimes there's no artist, we skip those entries
-			if ( empty ( $artist ) )
-				continue;
+			if ( empty ( $all_events ) )
+				return $events;
 
-			$events [ $link ] = $artist;
+			phpQuery::newDocument ( $all_events );
+
+			foreach ( pq ( '.event_box' ) as $event )
+			{
+				$link   = '/' . pq ( '.button_view a', pq ( $event ) ) -> attr ( 'href' );
+				$artist = trim ( pq ( '.textfield > div > p', pq ( $event )) -> html() );
+
+				// sometimes there's no artist, we skip those entries
+				if ( empty ( $artist ) )
+					continue;
+
+				preg_match ( '~_([0-9]+)\.html~i', $link, $matches );
+
+				$events [ $matches [ 1 ]] = array (
+					'link'   => $link,
+					'artist' => $artist
+				);
+			}
+
+			// jump to next page, if there is one
+			$url = pq('#site > div:last > a:last') -> attr ( 'href' );
+
+			if ( $url == '#' )
+				break;
 		}
 
 		return $events;
@@ -56,9 +74,10 @@ class koka_update extends SQLite3
 	{
 		$inserts = array();
 
-		foreach ( $new_events as $link => $artist )
-			$inserts[] = '("' . $artist . '",
-				           "' . $link . '",
+		foreach ( $new_events as $id => $data )
+			$inserts[] = '('  . $id . ',
+				           "' . $data [ 'artist' ] . '",
+				           "' . $data [ 'link'   ] . '",
 							' . time() . ',
 							' . time() . ')';
 
@@ -68,7 +87,7 @@ class koka_update extends SQLite3
 
 			foreach ( $insert_chunks as $insert_chunk )
 			{
-				$query = 'INSERT INTO koka_events(artist, link, createdate, lastseendate)
+				$query = 'INSERT INTO koka_events(id, artist, link, createdate, lastseendate)
 					      VALUES ' . implode ( ',', $insert_chunk );
 
 				$this -> exec ( $query );
@@ -90,9 +109,12 @@ class koka_update extends SQLite3
 
 		$current_events = $this -> getKokaEvents();
 
+		if ( false === $current_events )
+			return false;
+
 		$query = 'SELECT id, link
 	              FROM koka_events
-		          WHERE link IN ("' . implode ( '","', array_keys ( $current_events ) ) . '")';
+		          WHERE id IN ("' . implode ( '","', array_keys ( $current_events ) ) . '")';
 
 		if ( ! ( $res = $this -> query ( $query ) ) )
 			die ( 'error in database query' );
@@ -102,7 +124,7 @@ class koka_update extends SQLite3
 		while ( $found = $res -> fetchArray ( SQLITE3_ASSOC ) )
 		{
 			$update_times[] = $found [ 'id' ];
-			unset ( $current_events [ $found [ 'link' ]] );
+			unset ( $current_events [ $found [ 'id' ]] );
 		}
 
 		// lastseen timestamps
