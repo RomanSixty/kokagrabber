@@ -45,7 +45,7 @@ $(function(){
 
 			$entry = $(this);
 
-			$.ajax('/rpc.php?action='+action+'&id='+$(this).attr('data-id'))
+			$.ajax('rpc.php?action='+action+'&id='+$(this).attr('data-id'))
 			.done(function(){
 				if ( action == 'hilight' )
 					$entry.addClass('hilight');
