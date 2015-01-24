@@ -43,6 +43,23 @@ class koka_hilight extends SQLite3
 		else
 			$hilights = array();
 
+		$hilights = $this -> purgeOldHilights ( $hilights );
+
 		return $hilights;
+	}
+
+	private function purgeOldHilights ( $curr_hilights )
+	{
+		$res = $this -> query ( 'SELECT id FROM koka_events WHERE id IN (' . implode ( ',', $curr_hilights ) . ')' );
+
+		$new_hilights = array();
+
+		while ( $found = $res -> fetchArray ( SQLITE3_ASSOC ) )
+			$new_hilights[] = $found [ 'id' ];
+
+		if ( $curr_hilights != $new_hilights )
+			$this -> query ( 'UPDATE koka_settings SET sval = "' . implode ( ',', $new_hilights ) . '" WHERE skey = "hilights"' );
+
+		return $new_hilights;
 	}
 }
