@@ -54,7 +54,7 @@ class koka_view extends SQLite3
 		$events     = array();
 		$last_visit = $this -> getLastVisit();
 
-		$res = $this -> query ( 'SELECT * FROM koka_events ORDER BY artist ASC' );
+		$res = $this -> query ( 'SELECT * FROM koka_events ORDER BY LOWER(artist) ASC' );
 
 		// Favoriten
 		$kh = new koka_hilight();
