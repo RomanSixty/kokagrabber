@@ -79,8 +79,8 @@ class koka_update extends SQLite3
 
 		foreach ( $new_events as $id => $data )
 			$inserts[] = '('  . $id . ',
-				           "' . $data [ 'artist' ] . '",
-				           "' . $data [ 'link'   ] . '",
+				           "' . htmlspecialchars ( $data [ 'artist' ] ) . '",
+				           "' . htmlspecialchars ( $data [ 'link'   ] ) . '",
 							' . time() . ',
 							' . time() . ')';
 
@@ -115,7 +115,7 @@ class koka_update extends SQLite3
 		if ( false === $current_events )
 			return false;
 
-		$query = 'SELECT id, link
+		$query = 'SELECT id
 	              FROM koka_events
 		          WHERE id IN ("' . implode ( '","', array_keys ( $current_events ) ) . '")';
 
