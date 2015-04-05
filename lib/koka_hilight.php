@@ -31,7 +31,7 @@ class koka_hilight extends SQLite3
 		}
 
 		// neue Einträge speichern
-		$this -> query ( 'REPLACE INTO koka_settings (skey, sval) VALUES ("hilights", "' . implode ( ',', $hilights ) . '")' );
+		$this -> exec ( 'REPLACE INTO koka_settings (skey, sval) VALUES ("hilights", "' . implode ( ',', $hilights ) . '")' );
 	}
 
 	public function getHilights()
@@ -58,7 +58,7 @@ class koka_hilight extends SQLite3
 			$new_hilights[] = $found [ 'id' ];
 
 		if ( $curr_hilights != $new_hilights )
-			$this -> query ( 'UPDATE koka_settings SET sval = "' . implode ( ',', $new_hilights ) . '" WHERE skey = "hilights"' );
+			$this -> exec ( 'UPDATE koka_settings SET sval = "' . implode ( ',', $new_hilights ) . '" WHERE skey = "hilights"' );
 
 		return $new_hilights;
 	}
