@@ -13,6 +13,9 @@ class koka_update extends SQLite3
 
 	private function updateNecessary()
 	{
+		if ( !empty ( $_GET [ 'force_refresh' ] ) )
+			return true;
+
 		$res = $this -> query ( 'SELECT sval FROM koka_settings WHERE skey = "last_update"' );
 
 		if ( $found = $res -> fetchArray ( SQLITE3_ASSOC ) )
