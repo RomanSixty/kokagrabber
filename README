@@ -8,14 +8,16 @@ since last visit.
 
 Requirements
 
-The tool uses phpQuery to scrape the events from an HTML page. You can
-install that from the PEAR repository using
+The tool uses phpQuery to scrape the events from an HTML page. Since the
+PEAR package is no longer maintained, you have to get it from here:
 
-  pear channel-discover phpquery-pear.appspot.com
-  pear install phpquery/phpQuery
+  https://code.google.com/archive/p/phpquery/downloads
 
-Also it uses SQLite as database backend. On Debian Linux this can be
-installed by calling
+The default inclusion path is set to "/usr/lib/phpquery", you can change
+that in /lib/koka_update.php.
+
+Also the tool uses SQLite as database backend. On Debian Linux this can
+be installed by calling
 
   apt-get install php5-sqlite
 

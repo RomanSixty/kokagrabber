@@ -1,5 +1,7 @@
 <?php
 
+set_include_path ( get_include_path() . PATH_SEPARATOR . '/usr/lib/phpquery' );
+
 include ( 'phpQuery.php' );
 
 class koka_update extends SQLite3
