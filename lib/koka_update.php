@@ -39,7 +39,7 @@ class koka_update extends SQLite3
 
 		$url = 'http://www.koka36.de/events.php?kategorie=Rock%2FPop+%26+More';
 
-		while ( true )
+		while ( !empty ( $url ) )
 		{
 			$all_events = file_get_contents ( $url );
 
