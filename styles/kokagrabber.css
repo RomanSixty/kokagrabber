@@ -47,6 +47,8 @@ body {
 ul {
 	-moz-column-width: 250px;
 	-moz-column-gap: 10px;
+	column-width: 250px;
+	column-gap: 10px;
 	padding: 0;
 	margin: 0;
 }
