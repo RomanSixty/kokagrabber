@@ -32,6 +32,16 @@ class koka_view extends SQLite3
 		return $last_visit;
 	}
 
+    private function getLastUpdate()
+    {
+        $res = $this -> query ( 'SELECT sval FROM koka_settings WHERE skey = "last_update"' );
+
+        if ( $found = $res -> fetchArray ( SQLITE3_ASSOC ) )
+            return $found [ 'sval' ];
+        else
+            return 0;
+    }
+
 	private function eventSnipplet ( $event )
 	{
 		static $html = null;
@@ -89,6 +99,7 @@ class koka_view extends SQLite3
 		$html = file_get_contents ( DIR . '/templates/main.html' );
 
 		$html = str_replace ( '%%%EVENTS%%%', $this -> getAllEvents(), $html );
+		$html = str_replace ( '%%%LASTUPDATE%%%', date ( 'Y-m-d H:i:s', $this -> getLastUpdate() ), $html );
 
 		echo $html;
 	}

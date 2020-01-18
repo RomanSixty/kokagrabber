@@ -13,26 +13,25 @@ header {
 	box-shadow: 0 0 7px 0 rgba(0, 0, 0, .3);
 	background: #f6f6f6;
 	z-index: 5;
-}
 
-header:after {
-	content:"";
-	clear: both;
-	display: block;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-content: center;
 }
 
 header h1 {
-	float: left;
 	font-size: 20px;
-	margin-right: 20px;
 	vertical-align: middle;
 	font-family: sans-serif;
 }
 
 header .refresh {
-  display: block;
-  float: right;
   font-size: 20px;
+}
+
+.filters {
+  width: 50%;
 }
 
 .filters li.active {
