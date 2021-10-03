@@ -14,3 +14,6 @@ CREATE TABLE IF NOT EXISTS koka_settings (
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS setting ON koka_settings (skey);
+
+ALTER TABLE "koka_events"
+	ADD COLUMN "eventdate" TEXT NULL;

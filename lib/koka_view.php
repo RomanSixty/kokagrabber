@@ -50,10 +50,11 @@ class koka_view extends SQLite3
 			$html = file_get_contents ( DIR . '/templates/listentry.html' );
 
 		$replacements = array (
-			'%%%ID%%%'      => $event [ 'id'      ],
-			'%%%LINK%%%'    => $event [ 'link'    ],
-			'%%%ARTIST%%%'  => $event [ 'artist'  ],
-			'%%%CLASSES%%%' => $event [ 'classes' ]
+			'%%%ID%%%'      => $event [ 'id'        ],
+			'%%%LINK%%%'    => $event [ 'link'      ],
+			'%%%ARTIST%%%'  => $event [ 'artist'    ],
+			'%%%DATUM%%%'   => $event [ 'eventdate' ],
+			'%%%CLASSES%%%' => $event [ 'classes'   ]
 		);
 
 		return strtr ( $html, $replacements );

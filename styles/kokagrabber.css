@@ -80,6 +80,12 @@ li a {
   min-height: 15px;
 }
 
+li a small {
+  text-transform: none;
+  float: right;
+  padding-left: 15px;
+}
+
 .events li {
 	position: relative;
 	padding-left: 10px;

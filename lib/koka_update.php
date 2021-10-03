@@ -59,9 +59,12 @@ class koka_update extends SQLite3
 
 				preg_match ( '~_([0-9]+)\.html~i', $link, $matches );
 
+				$datum = pq ( '[style="imagefield"] > div:last', pq ( $event ) ) -> text();
+
 				$events [ $matches [ 1 ]] = array (
-					'link'   => $link,
-					'artist' => $artist
+					'link'      => $link,
+					'artist'    => $artist,
+					'eventdate' => trim ( $datum )
 				);
 			}
 
@@ -71,7 +74,6 @@ class koka_update extends SQLite3
 			if ( $url == '#' )
 				break;
 		}
-
 		return $events;
 	}
 
@@ -81,8 +83,9 @@ class koka_update extends SQLite3
 
 		foreach ( $new_events as $id => $data )
 			$inserts[] = '('  . $id . ',
-				           "' . htmlspecialchars ( $data [ 'artist' ] ) . '",
-				           "' . htmlspecialchars ( $data [ 'link'   ] ) . '",
+						   "' . htmlspecialchars ( $data [ 'artist'    ] ) . '",
+						   "' . htmlspecialchars ( $data [ 'link'      ] ) . '",
+						   "' . htmlspecialchars ( $data [ 'eventdate' ] ) . '",
 							' . time() . ',
 							' . time() . ')';
 
@@ -92,7 +95,7 @@ class koka_update extends SQLite3
 
 			foreach ( $insert_chunks as $insert_chunk )
 			{
-				$query = 'INSERT INTO koka_events(id, artist, link, createdate, lastseendate)
+				$query = 'INSERT INTO koka_events(id, artist, link, eventdate, createdate, lastseendate)
 					      VALUES ' . implode ( ',', $insert_chunk );
 
 				$this -> exec ( $query );
