@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS koka_events (
 	link TEXT,
 	createdate INTEGER DEFAULT 0,
 	viewdate INTEGER DEFAULT 0,
+	eventdate TEXT DEFAULT NULL,
 	lastseendate INTEGER DEFAULT 0
 );
 
@@ -14,6 +15,3 @@ CREATE TABLE IF NOT EXISTS koka_settings (
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS setting ON koka_settings (skey);
-
-ALTER TABLE "koka_events"
-	ADD COLUMN "eventdate" TEXT NULL;
