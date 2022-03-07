@@ -117,11 +117,13 @@ class koka_update extends SQLite3
 
 		$current_events = $this -> getKokaEvents();
 
+		$update_events = [];
+
 		if ( false === $current_events )
 			return false;
 
-		$query = 'SELECT id
-	              FROM koka_events
+		$query = 'SELECT id, eventdate
+                          FROM koka_events
 		          WHERE id IN ("' . implode ( '","', array_keys ( $current_events ) ) . '")';
 
 		if ( ! ( $res = $this -> query ( $query ) ) )
@@ -132,6 +134,10 @@ class koka_update extends SQLite3
 		while ( $found = $res -> fetchArray ( SQLITE3_ASSOC ) )
 		{
 			$update_times[] = $found [ 'id' ];
+
+			if ( $found [ 'eventdate' ] != $current_events [ $found [ 'id' ]][ 'eventdate' ] )
+			    $update_events [ $found [ 'id' ]] = $current_events [ $found [ 'id' ]][ 'eventdate' ];
+
 			unset ( $current_events [ $found [ 'id' ]] );
 		}
 
@@ -145,13 +151,20 @@ class koka_update extends SQLite3
 			$this -> exec ( $query );
 		}
 
+		// updated event dates
+		if ( count ( $update_events ) )
+		{
+			foreach ( $update_events as $id => $eventdate )
+				$this -> exec ( 'UPDATE koka_events SET eventdate = "' . $eventdate . '" WHERE id = ' . $id );
+		}
+
 		$this -> insert ( $current_events );
 		$this -> purgeOldEvents();
 
 		// mark last update time
 		$query = 'UPDATE koka_settings
-			      SET sval = ' . time() . '
-				  WHERE skey = "last_update"';
+				 SET sval = ' . time() . '
+				 WHERE skey = "last_update"';
 
 		$this -> exec ( $query );
 	}
