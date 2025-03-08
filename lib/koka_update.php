@@ -41,7 +41,12 @@ class koka_update extends SQLite3
 
 		while ( !empty ( $url ) )
 		{
-			$all_events = file_get_contents ( $url );
+			try {
+				$all_events = file_get_contents ( $url );
+			}
+			catch ( Exception $e ) {
+				return false;
+			}
 
 			if ( empty ( $all_events ) )
 				return $events;
@@ -119,7 +124,7 @@ class koka_update extends SQLite3
 
 		$update_events = [];
 
-		if ( false === $current_events )
+		if ( false === $current_events || empty ( $current_events ) || count ( $current_events ) < 50 )
 			return false;
 
 		$query = 'SELECT id, eventdate
