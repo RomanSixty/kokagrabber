@@ -6,171 +6,171 @@ include ( 'phpQuery.php' );
 
 class koka_update extends SQLite3
 {
-	function __construct()
-	{
-		$this -> open ( DIR . '/db/kokacache.sqlite' );
+    function __construct()
+    {
+        $this -> open ( DIR . '/db/kokacache.sqlite' );
 
-		$this -> exec ( file_get_contents ( DIR . '/sql/koka_events.sql' ) );
-	}
+        $this -> exec ( file_get_contents ( DIR . '/sql/koka_events.sql' ) );
+    }
 
-	private function updateNecessary()
-	{
-		if ( !empty ( $_GET [ 'force_refresh' ] ) )
-			return true;
+    private function updateNecessary()
+    {
+        if ( !empty ( $_GET [ 'force_refresh' ] ) )
+            return true;
 
-		$res = $this -> query ( 'SELECT sval FROM koka_settings WHERE skey = "last_update"' );
+        $res = $this -> query ( 'SELECT sval FROM koka_settings WHERE skey = "last_update"' );
 
-		if ( $found = $res -> fetchArray ( SQLITE3_ASSOC ) )
-		{
-			// we only update every 3 hours
-			return ( $found [ 'sval' ] <= time() - 3*3600 );
-		}
-		else
-		{
-			$this -> exec ( 'INSERT INTO koka_settings(skey, sval) VALUES ("last_update", 0)' );
+        if ( $found = $res -> fetchArray ( SQLITE3_ASSOC ) )
+        {
+            // we only update every 3 hours
+            return ( $found [ 'sval' ] <= time() - 3*3600 );
+        }
+        else
+        {
+            $this -> exec ( 'INSERT INTO koka_settings(skey, sval) VALUES ("last_update", 0)' );
 
-			return true;
-		}
-	}
+            return true;
+        }
+    }
 
-	private function getKokaEvents()
-	{
-		$events = false;
+    private function getKokaEvents()
+    {
+        $events = false;
 
-		$url = 'http://www.koka36.de/events.php?kategorie=Rock%2FPop+%26+More';
+        $url = 'http://www.koka36.de/events.php?kategorie=Rock%2FPop+%26+More';
 
-		while ( !empty ( $url ) )
-		{
-			try {
-				$all_events = file_get_contents ( $url );
-			}
-			catch ( Exception $e ) {
-				return false;
-			}
+        while ( !empty ( $url ) )
+        {
+            try {
+                $all_events = file_get_contents ( $url );
+            }
+            catch ( Exception $e ) {
+                return false;
+            }
 
-			if ( empty ( $all_events ) )
-				return $events;
+            if ( empty ( $all_events ) )
+                return $events;
 
-			phpQuery::newDocument ( $all_events );
+            phpQuery::newDocument ( $all_events );
 
-			foreach ( pq ( '.event_box' ) as $event )
-			{
-				$link   = '/' . pq ( '.button_view a', pq ( $event ) ) -> attr ( 'href' );
-				$artist = trim ( pq ( '.nailthumb-container > img', pq ( $event )) -> attr ( 'alt' ) );
+            foreach ( pq ( '.event_box' ) as $event )
+            {
+                $link   = '/' . pq ( '.button_view a', pq ( $event ) ) -> attr ( 'href' );
+                $artist = trim ( pq ( '.nailthumb-container > img', pq ( $event )) -> attr ( 'alt' ) );
 
-				// sometimes there's no artist, we skip those entries
-				if ( empty ( $artist ) )
-					continue;
+                // sometimes there's no artist, we skip those entries
+                if ( empty ( $artist ) )
+                    continue;
 
-				preg_match ( '~_([0-9]+)\.html~i', $link, $matches );
+                preg_match ( '~_([0-9]+)\.html~i', $link, $matches );
 
-				$datum = pq ( '[style="imagefield"] > div:last', pq ( $event ) ) -> text();
+                $datum = pq ( '[style="imagefield"] > div:last', pq ( $event ) ) -> text();
 
-				$events [ $matches [ 1 ]] = array (
-					'link'      => $link,
-					'artist'    => $artist,
-					'eventdate' => trim ( $datum )
-				);
-			}
+                $events [ $matches [ 1 ]] = array (
+                    'link'      => $link,
+                    'artist'    => $artist,
+                    'eventdate' => trim ( $datum )
+                );
+            }
 
-			// jump to next page, if there is one
-			$url = pq('#site > div:last > a:last') -> attr ( 'href' );
+            // jump to next page, if there is one
+            $url = pq('#site > div:last > a:last') -> attr ( 'href' );
 
-			if ( $url == '#' )
-				break;
-		}
-		return $events;
-	}
+            if ( $url == '#' )
+                break;
+        }
+        return $events;
+    }
 
-	private function insert ( $new_events )
-	{
-		$inserts = array();
+    private function insert ( $new_events )
+    {
+        $inserts = array();
 
-		foreach ( $new_events as $id => $data )
-			$inserts[] = '('  . $id . ',
-						   "' . htmlspecialchars ( $data [ 'artist'    ] ) . '",
-						   "' . htmlspecialchars ( $data [ 'link'      ] ) . '",
-						   "' . htmlspecialchars ( $data [ 'eventdate' ] ) . '",
-							' . time() . ',
-							' . time() . ')';
+        foreach ( $new_events as $id => $data )
+            $inserts[] = '('  . $id . ',
+                           "' . htmlspecialchars ( $data [ 'artist'    ] ) . '",
+                           "' . htmlspecialchars ( $data [ 'link'      ] ) . '",
+                           "' . htmlspecialchars ( $data [ 'eventdate' ] ) . '",
+                            ' . time() . ',
+                            ' . time() . ')';
 
-		if ( count ( $inserts ) )
-		{
-			$insert_chunks = array_chunk ( $inserts, 20 );
+        if ( count ( $inserts ) )
+        {
+            $insert_chunks = array_chunk ( $inserts, 20 );
 
-			foreach ( $insert_chunks as $insert_chunk )
-			{
-				$query = 'INSERT INTO koka_events(id, artist, link, eventdate, createdate, lastseendate)
-					      VALUES ' . implode ( ',', $insert_chunk );
+            foreach ( $insert_chunks as $insert_chunk )
+            {
+                $query = 'INSERT INTO koka_events(id, artist, link, eventdate, createdate, lastseendate)
+                          VALUES ' . implode ( ',', $insert_chunk );
 
-				$this -> exec ( $query );
-			}
-		}
-	}
+                $this -> exec ( $query );
+            }
+        }
+    }
 
-	private function purgeOldEvents()
-	{
-		$query = 'DELETE FROM koka_events WHERE lastseendate < ' . ( time() - 24*3600 );
+    private function purgeOldEvents()
+    {
+        $query = 'DELETE FROM koka_events WHERE lastseendate < ' . ( time() - 24*3600 );
 
-		$this -> exec ( $query );
-	}
+        $this -> exec ( $query );
+    }
 
-	public function update()
-	{
-		if ( !$this -> updateNecessary() )
-			return;
+    public function update()
+    {
+        if ( !$this -> updateNecessary() )
+            return;
 
-		$current_events = $this -> getKokaEvents();
+        $current_events = $this -> getKokaEvents();
 
-		$update_events = [];
+        $update_events = [];
 
-		if ( false === $current_events || empty ( $current_events ) || count ( $current_events ) < 50 )
-			return false;
+        if ( empty ( $current_events ) || count ( $current_events ) < 50 )
+            return false;
 
-		$query = 'SELECT id, eventdate
-                          FROM koka_events
-		          WHERE id IN ("' . implode ( '","', array_keys ( $current_events ) ) . '")';
+        $query = 'SELECT id, eventdate
+                  FROM koka_events
+                  WHERE id IN ("' . implode ( '","', array_keys ( $current_events ) ) . '")';
 
-		if ( ! ( $res = $this -> query ( $query ) ) )
-			die ( 'error in database query' );
+        if ( ! ( $res = $this -> query ( $query ) ) )
+            die ( 'error in database query' );
 
-		$update_times = array();
+        $update_times = [];
 
-		while ( $found = $res -> fetchArray ( SQLITE3_ASSOC ) )
-		{
-			$update_times[] = $found [ 'id' ];
+        while ( $found = $res -> fetchArray ( SQLITE3_ASSOC ) )
+        {
+            $update_times[] = $found [ 'id' ];
 
-			if ( $found [ 'eventdate' ] != $current_events [ $found [ 'id' ]][ 'eventdate' ] )
-			    $update_events [ $found [ 'id' ]] = $current_events [ $found [ 'id' ]][ 'eventdate' ];
+            if ( $found [ 'eventdate' ] != $current_events [ $found [ 'id' ]][ 'eventdate' ] )
+                $update_events [ $found [ 'id' ]] = $current_events [ $found [ 'id' ]][ 'eventdate' ];
 
-			unset ( $current_events [ $found [ 'id' ]] );
-		}
+            unset ( $current_events [ $found [ 'id' ]] );
+        }
 
-		// lastseen timestamps
-		if ( count ( $update_times ) )
-		{
-			$query = 'UPDATE koka_events
-				      SET lastseendate = ' . time() . '
-				      WHERE id IN (' . implode ( ',', $update_times ) . ')';
+        // lastseen timestamps
+        if ( count ( $update_times ) )
+        {
+            $query = 'UPDATE koka_events
+                      SET lastseendate = ' . time() . '
+                      WHERE id IN (' . implode ( ',', $update_times ) . ')';
 
-			$this -> exec ( $query );
-		}
+            $this -> exec ( $query );
+        }
 
-		// updated event dates
-		if ( count ( $update_events ) )
-		{
-			foreach ( $update_events as $id => $eventdate )
-				$this -> exec ( 'UPDATE koka_events SET eventdate = "' . $eventdate . '" WHERE id = ' . $id );
-		}
+        // updated event dates
+        if ( count ( $update_events ) )
+        {
+            foreach ( $update_events as $id => $eventdate )
+                $this -> exec ( 'UPDATE koka_events SET eventdate = "' . $eventdate . '" WHERE id = ' . $id );
+        }
 
-		$this -> insert ( $current_events );
-		$this -> purgeOldEvents();
+        $this -> insert ( $current_events );
+        $this -> purgeOldEvents();
 
-		// mark last update time
-		$query = 'UPDATE koka_settings
-				 SET sval = ' . time() . '
-				 WHERE skey = "last_update"';
+        // mark last update time
+        $query = 'UPDATE koka_settings
+                 SET sval = ' . time() . '
+                 WHERE skey = "last_update"';
 
-		$this -> exec ( $query );
-	}
+        $this -> exec ( $query );
+    }
 }

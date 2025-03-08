@@ -2,64 +2,66 @@
 
 class koka_hilight extends SQLite3
 {
-	function __construct()
-	{
-		$this -> open ( DIR . '/db/kokacache.sqlite' );
-	}
+    function __construct()
+    {
+        $this -> open ( DIR . '/db/kokacache.sqlite' );
+    }
 
-	public function action ( $id, $unhilight = false )
-	{
-		$id = intval ( $id );
+    public function action ( $id, $unhilight = false )
+    {
+        $id = intval ( $id );
 
-		if ( empty ( $id ) )
-			return;
+        if ( empty ( $id ) )
+            return;
 
-		$hilights = $this -> getHilights();
+        $hilights = $this -> getHilights ();
 
-		// eintragen oder austragen?
+        // eintragen oder austragen?
 
-		if ( $unhilight === false )
-		{
-			$hilights[] = $id;
-		}
-		else
-		{
-			$key = array_search ( $id, $hilights );
+        if ( $unhilight === false )
+        {
+            $hilights[] = $id;
+        }
+        else
+        {
+            $key = array_search ( $id, $hilights );
 
-			if ( $key !== false )
-				unset ( $hilights [ $key ] );
-		}
+            if ( $key !== false )
+                unset ( $hilights [ $key ] );
+        }
 
-		// neue Einträge speichern
-		$this -> exec ( 'REPLACE INTO koka_settings (skey, sval) VALUES ("hilights", "' . implode ( ',', $hilights ) . '")' );
-	}
+        // neue Einträge speichern
+        $this -> exec ( 'REPLACE INTO koka_settings (skey, sval) VALUES ("hilights", "' . implode ( ',', $hilights ) . '")' );
+    }
 
-	public function getHilights()
-	{
-		$res = $this -> query ( 'SELECT sval FROM koka_settings WHERE skey = "hilights"' );
+    public function getHilights()
+    {
+        $res = $this -> query ( 'SELECT sval FROM koka_settings WHERE skey = "hilights"' );
 
-		if ( $found = $res -> fetchArray ( SQLITE3_ASSOC ) )
-			$hilights = explode ( ',', $found [ 'sval' ] );
-		else
-			$hilights = array();
+        if ( $found = $res -> fetchArray ( SQLITE3_ASSOC ) )
+            $hilights = explode ( ',', $found [ 'sval' ] );
+        else
+            $hilights = [];
 
-		$hilights = $this -> purgeOldHilights ( $hilights );
+        $hilights = $this -> purgeOldHilights ( $hilights );
 
-		return $hilights;
-	}
+        return $hilights;
+    }
 
-	private function purgeOldHilights ( $curr_hilights )
-	{
-		$res = $this -> query ( 'SELECT id FROM koka_events WHERE id IN (' . implode ( ',', $curr_hilights ) . ')' );
+    private function purgeOldHilights ( $curr_hilights )
+    {
+        $res = $this -> query ( 'SELECT id FROM koka_events WHERE id IN (' . implode ( ',', $curr_hilights ) . ')' );
 
-		$new_hilights = array();
+        $new_hilights = [];
 
-		while ( $found = $res -> fetchArray ( SQLITE3_ASSOC ) )
-			$new_hilights[] = $found [ 'id' ];
+        while ( $found = $res -> fetchArray ( SQLITE3_ASSOC ) )
+        {
+            $new_hilights[] = $found [ 'id' ];
+        }
 
-		if ( $curr_hilights != $new_hilights )
-			$this -> exec ( 'UPDATE koka_settings SET sval = "' . implode ( ',', $new_hilights ) . '" WHERE skey = "hilights"' );
+        if ( $curr_hilights != $new_hilights )
+            $this -> exec ( 'UPDATE koka_settings SET sval = "' . implode ( ',', $new_hilights ) . '" WHERE skey = "hilights"' );
 
-		return $new_hilights;
-	}
+        return $new_hilights;
+    }
 }
