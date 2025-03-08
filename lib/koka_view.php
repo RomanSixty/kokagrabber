@@ -52,7 +52,7 @@ class koka_view extends SQLite3
 		$replacements = array (
 			'%%%ID%%%'      => $event [ 'id'        ],
 			'%%%LINK%%%'    => $event [ 'link'      ],
-			'%%%ARTIST%%%'  => $event [ 'artist'    ],
+			'%%%ARTIST%%%'  => utf8_decode ( $event [ 'artist'    ] ),
 			'%%%DATUM%%%'   => $event [ 'eventdate' ],
 			'%%%CLASSES%%%' => $event [ 'classes'   ]
 		);
