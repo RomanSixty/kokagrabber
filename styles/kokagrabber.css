@@ -1,5 +1,6 @@
 * {
   font-size: 12px;
+  font-family: serif;
   padding: 0;
   margin: 0;
 }
@@ -30,12 +31,26 @@ header .refresh {
   font-size: 20px;
 }
 
-.filters {
-  width: 50%;
+fieldset.filters,
+fieldset.sort {
+  width: 30%;
+  border: 0;
 }
 
-.filters li.active {
+fieldset.filters button.active,
+fieldset.sort button.active {
   outline: 2px solid #c00;
+}
+
+legend {
+  display: block;
+  float: left;
+  padding: 5px;
+  font-weight: bold;
+}
+
+legend:after {
+  content: ":";
 }
 
 
@@ -43,7 +58,7 @@ body {
   padding: 55px 0 10px 10px;
 }
 
-ul {
+ul.events {
   -moz-column-width: 250px;
   -moz-column-gap: 10px;
   column-width: 250px;
@@ -52,16 +67,32 @@ ul {
   margin: 0;
 }
 
-li {
+ul.events li,
+fieldset.filters button,
+fieldset.sort button {
   list-style-type: none;
   text-transform: uppercase;
   background: #eee;
   max-width: 250px;
   overflow: hidden;
   margin-bottom: 1px;
+  position: relative;
+  padding-left: 10px;
 }
 
-li:nth-of-type(2n-1) {
+ul.events li:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 10px;
+  top: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, .3);
+  cursor: pointer;
+  border-right: 1px solid #fff;
+}
+
+ul.events li:nth-of-type(2n-1) {
   background: #ccc;
 }
 
@@ -74,57 +105,61 @@ a:hover {
   text-decoration: underline;
 }
 
-li a {
+ul.events li a,
+fieldset.filters button,
+fieldset.sort button {
   display: block;
   padding: 3px 10px;
   min-height: 15px;
 }
 
-li a small {
+ul.events li a small {
   text-transform: none;
   float: right;
   padding-left: 15px;
 }
 
-.events li {
-  position: relative;
-  padding-left: 10px;
-}
-
-.events li:before {
-  content: '';
-  position: absolute;
-  left: 0;
-  width: 10px;
-  top: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, .3);
-  cursor: pointer;
-  border-right: 1px solid #fff;
-}
-
-li.new {
+ul.events li.new,
+fieldset.filters button.new {
   background: #9f9;
 }
 
-li.new:before {
+ul.events li.new:before {
   background: #0c0;
 }
 
-li.hilight a,
-li.new a {
+ul.events li.hilight a,
+ul.events li.new a {
   font-weight: bold;
 }
 
-li.old a {
+ul.events li.old a {
   color: #999;
 }
 
-li.hilight {
+ul.events li.hilight,
+fieldset.filters button.hilight {
   background: #f96;
 }
 
-li.hilight:before,
-li:hover:before {
+ul.events li.hilight:before,
+ul.events li:hover:before {
   background: #c00;
+}
+
+
+fieldset.filters,
+fieldset.sort {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 20px;
+  list-style-type: none;
+}
+
+fieldset.filters button,
+fieldset.sort button {
+  border: 0;
+  font-weight: bold;
+  cursor: pointer;
+  min-width: 150px;
 }

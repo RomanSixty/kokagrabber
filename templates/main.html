@@ -12,10 +12,17 @@
 <header>
     <a href="/"><h1>KoKaGrabber</h1></a>
 
-    <ul class="filters">
-        <li id="filter_new" class="new"><a href="#">nur neue Veranstaltungen</a></li>
-        <li id="filter_hilight" class="hilight"><a href="#">nur gemerkte Veranstaltungen</a></li>
-    </ul>
+    <fieldset class="filters">
+        <legend>Filter</legend>
+        <button id="filter_new" class="new">nur neue</button>
+        <button id="filter_hilight" class="hilight">nur gemerkte</button>
+    </fieldset>
+
+    <fieldset class="sort">
+        <legend>Sortierung</legend>
+        <button id="sort_name" class="active">nach Name</button>
+        <button id="sort_date">nach Datum</button>
+    </fieldset>
 
     <div>(Stand: %%%LASTUPDATE%%%)</div>
 

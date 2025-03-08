@@ -57,6 +57,12 @@ class koka_view extends SQLite3
             '%%%CLASSES%%%' => $event [ 'classes'   ]
         ];
 
+        $datum_normalized = preg_replace ( '~^[^0-9.]+~', '', $event [ 'eventdate' ] );
+
+        list ( $d, $m, $y ) = explode ( '.', $datum_normalized );
+
+        $replacements [ '%%%DATUM_NORMALIZED%%%' ] = $y . '-' . $m . '-' . $d;
+
         return strtr ( $html, $replacements );
     }
 
