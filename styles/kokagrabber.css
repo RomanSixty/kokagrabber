@@ -31,6 +31,10 @@ header .refresh {
   font-size: 20px;
 }
 
+header > div {
+  line-height: 27px;
+}
+
 fieldset.filters,
 fieldset.sort {
   width: 30%;
