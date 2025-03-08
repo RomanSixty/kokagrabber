@@ -1,53 +1,66 @@
-$(function () {
-    $('#filter_new').click(function() {
-        if ($(this).hasClass('active')) {
-            showAll();
-        }
-        else {
-            showAll();
-            $(this).addClass('active');
-            $('.events li:not(.new)').hide();
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('#filter_new').addEventListener('click', function(e) {
+        showAll();
+
+        if (e.target.classList.contains('active')) {
+            e.target.classList.remove('active');
+        } else {
+            e.target.classList.add('active');
+            document.querySelector('#filter_hilight').classList.remove('active');
+
+            Array.prototype.forEach.call(document.querySelectorAll('.events li:not(.new)'), function(el) {
+                el.style.display = 'none';
+            });
         }
     });
 
-    $('#filter_hilight').click(function() {
-        if ($(this).hasClass('active')) {
-            showAll();
-        }
-        else {
-            showAll();
-            $(this).addClass('active');
-            $('.events li:not(.hilight)').hide();
+    document.querySelector('#filter_hilight').addEventListener('click', function(e) {
+        showAll();
+
+        if (e.target.classList.contains('active')) {
+            e.target.classList.remove('active');
+        } else {
+            e.target.classList.add('active');
+            document.querySelector('#filter_new').classList.remove('active');
+
+            Array.prototype.forEach.call(document.querySelectorAll('.events li:not(.hilight)'), function(el) {
+                el.style.display = 'none';
+            });
         }
     });
 
     function showAll() {
-        $('.filters .active').removeClass('active');
-        $('.events li').show();
+        Array.prototype.forEach.call(document.querySelectorAll('.events li'), function(el) {
+            el.style.display = 'block';
+        });
     }
 
-    $('.events li').click(function (e) {
-        if (e.target.tagName != 'A') {
-            if ($(this).hasClass('hilight'))
-                action = 'unhilight';
-            else
-                action = 'hilight';
+    Array.prototype.forEach.call(document.querySelectorAll('.events li'), function(el) {
+        el.addEventListener('click', function(e) {
+            if (e.target.tagName !== 'A') {
+                let action = 'hilight';
 
-            $entry = $(this);
+                if (e.target.classList.contains('hilight')) {
+                    action = 'unhilight';
+                }
 
-            $.ajax('rpc.php?action=' + action + '&id=' + $(this).attr('data-id'))
-             .done(function () {
-                 if (action == 'hilight')
-                     $entry.addClass('hilight');
-                 else
-                     $entry.removeClass('hilight');
-             });
-        }
+                fetch('rpc.php?action=' + action + '&id=' + el.dataset['id'], {
+                    method: 'post',
+                }).then(function() {
+                     if (action === 'hilight') {
+                         e.target.classList.add('hilight');
+                     } else {
+                         e.target.classList.remove('hilight');
+                     }
+                });
+            }
+        })
     });
 
     document.querySelector('#sort_date').addEventListener('click', function(e) {
         if (!e.target.classList.contains('active')) {
             sortList(document.querySelector('ul.events'), 'date');
+
             document.querySelector('#sort_name').classList.remove('active');
             e.target.classList.add('active');
         }
@@ -56,6 +69,7 @@ $(function () {
     document.querySelector('#sort_name').addEventListener('click', function(e) {
         if (!e.target.classList.contains('active')) {
             sortList(document.querySelector('ul.events'), 'name');
+
             document.querySelector('#sort_date').classList.remove('active');
             e.target.classList.add('active');
         }
