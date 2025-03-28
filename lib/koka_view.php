@@ -59,9 +59,14 @@ class koka_view extends SQLite3
 
         $datum_normalized = preg_replace ( '~^[^0-9.]+~', '', $event [ 'eventdate' ] );
 
-        list ( $d, $m, $y ) = explode ( '.', $datum_normalized );
+        if ( substr_count ( $datum_normalized, '.' ) )
+        {
+            list ( $d, $m, $y ) = explode ( '.', $datum_normalized );
 
-        $replacements [ '%%%DATUM_NORMALIZED%%%' ] = $y . '-' . $m . '-' . $d;
+            $replacements [ '%%%DATUM_NORMALIZED%%%' ] = $y . '-' . $m . '-' . $d;
+        }
+        else
+            $replacements [ '%%%DATUM_NORMALIZED%%%' ] = '';
 
         return strtr ( $html, $replacements );
     }
