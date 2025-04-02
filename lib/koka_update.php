@@ -124,8 +124,22 @@ class koka_update extends SQLite3
 
         $update_events = [];
 
-        if ( empty ( $current_events ) || count ( $current_events ) < 50 )
+        if ( empty ( $current_events ) )
             return false;
+
+        $query = 'SELECT COUNT(id) AS cnt FROM koka_events';
+
+        if ( ! ( $res = $this -> query ( $query ) ) )
+            die ( 'error in database query' );
+
+        // if we have less than 90 percent of currently known events
+        // something probably went wrong... don't update
+
+        while ( $cur_count = $res -> fetchArray ( SQLITE3_ASSOC ) )
+        {
+            if ( count ( $current_events ) < intval ( $cur_count [ 'cnt' ] ) * .9 )
+                return false;
+        }
 
         $query = 'SELECT id, eventdate
                   FROM koka_events
