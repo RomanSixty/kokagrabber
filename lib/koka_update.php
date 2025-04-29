@@ -55,7 +55,7 @@ class koka_update extends SQLite3
 
             foreach ( pq ( '.event_box' ) as $event )
             {
-                $link   = '/' . pq ( '.button_view a', pq ( $event ) ) -> attr ( 'href' );
+                $link   = 'https://www.koka36.de/' . pq ( '.button_view a', pq ( $event ) ) -> attr ( 'href' );
                 $artist = trim ( pq ( '.nailthumb-container > img', pq ( $event )) -> attr ( 'alt' ) );
 
                 // sometimes there's no artist, we skip those entries
