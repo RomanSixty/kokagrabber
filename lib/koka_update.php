@@ -157,7 +157,12 @@ class koka_update extends SQLite3
 
                     if ( count ( $artist ) > 1 )
                         foreach ( $artist as $key => $part )
-                            if ( stristr ( $part, 'Tour' ) || stristr ( $part, 'Tickets' ) || stristr ( $part, 'konzert' ) || strstr ( $part, 'Live' ) || strstr ( $part, 'Europe' ) )
+                            if (    stristr ( $part, 'Tour' )
+                                 || stristr ( $part, 'Tickets' )
+                                 || stristr ( $part, 'konzert' )
+                                 || strstr ( $part, 'Live' )
+                                 || strstr ( $part, 'Europe' )
+                                 || stristr ( $part, 'Open Air' ) )
                             {
                                 unset ( $artist [ $key ] );
 
