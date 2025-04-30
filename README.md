@@ -4,11 +4,13 @@
 
 KoKaGrabber is a simple project to grab the event list from koka36.de and mark newly added events for a better overview. It updates in a maximum frequency of three hours and marks events added in the last 24 hours or since last visit.
 
+Additionally also Eventim is scraped for events, since koka36 may not have tickets for all events of interest.
+
 ![Screenshot KoKaGrabber](/screenshot.png?raw=true)
 
 ## Features
 
-* pulls all concert events from koka36.de
+* pulls all concert events from koka36.de and eventim.com (for Berlin)
 * list view of all concerts
   * new events are marked
   * events on wishlist are highlighted
