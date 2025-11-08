@@ -99,12 +99,15 @@ class koka_update extends SQLite3
 
                 curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, 1 );
                 curl_setopt ( $ch, CURLOPT_FOLLOWLOCATION, true );
+
                 curl_setopt ( $ch, CURLOPT_ENCODING, 'identity' );
-                curl_setopt ( $ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:137.0) Gecko/20100101 Firefox/137.0' );
+                curl_setopt ( $ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0' );
 
                 curl_setopt ( $ch, CURLOPT_HTTPHEADER, [
                     'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                    'Accept-Encoding: gzip, deflate, br, zstd'
+                    'Accept-Encoding: gzip, deflate, br, zstd',
+                    'Accept-Language: en-US,de-DE;q=0.8,en;q=0.5,de;q=0.3',
+                    'DNT: 1'
                 ]);
 
                 $all_events = curl_exec ( $ch );
