@@ -213,9 +213,8 @@ class koka_update extends SQLite3
 
     private function purgeOldEvents()
     {
-        $query = 'DELETE FROM koka_events WHERE lastseendate < ' . ( time() - 24*3600 );
-
-        $this -> exec ( $query );
+        $this -> exec ( 'DELETE FROM koka_events WHERE lastseendate < ' . ( time() - 24*3600*60 ) );
+        $this -> exec ( 'UPDATE koka_events SET available = 0 WHERE lastseendate < ' . ( time() - 24*3600 ) );
     }
 
     public function update()

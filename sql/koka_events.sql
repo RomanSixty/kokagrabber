@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS koka_events (
 	createdate INTEGER DEFAULT 0,
 	viewdate INTEGER DEFAULT 0,
 	eventdate TEXT DEFAULT NULL,
-	lastseendate INTEGER DEFAULT 0
+	lastseendate INTEGER DEFAULT 0,
+	available INTEGER DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS koka_settings (
