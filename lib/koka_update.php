@@ -6,6 +6,9 @@ include ( 'phpQuery.php' );
 
 class koka_update extends SQLite3
 {
+    var $cnt_koka = 0;
+    var $cnt_eventim = 0;
+
     function __construct()
     {
         $this -> open ( DIR . '/db/kokacache.sqlite' );
@@ -78,7 +81,10 @@ class koka_update extends SQLite3
 
             if ( $url == '#' )
                 break;
-        }
+    }
+
+    $this -> cnt_koka = count ( $events );
+
         return $events;
     }
 
@@ -119,12 +125,18 @@ class koka_update extends SQLite3
             }
 
             if ( empty ( $all_events ) )
+            {
+                echo 'no Eventim events found (page ' . $page . ')';
                 return false;
+            }
 
             $data = json_decode ( $all_events, true );
 
             if ( empty ( $data ) )
+            {
+                echo 'error decoding Eventim JSON (page ' . $page . ')';
                 return false;
+            }
 
             foreach ( $data [ 'productGroups' ] as $event )
             {
@@ -161,10 +173,12 @@ class koka_update extends SQLite3
                     if ( count ( $artist ) > 1 )
                         foreach ( $artist as $key => $part )
                             if (    stristr ( $part, 'Tour' )
-                                 || stristr ( $part, 'Tickets' )
+                                 || stristr ( $part, 'Ticket' )
                                  || stristr ( $part, 'konzert' )
                                  || strstr ( $part, 'Live' )
                                  || strstr ( $part, 'Europe' )
+                                 || stristr ( $part, 'Package' )
+                                 || strstr ( $part, 'VIP' )
                                  || stristr ( $part, 'Open Air' ) )
                             {
                                 unset ( $artist [ $key ] );
@@ -178,6 +192,8 @@ class koka_update extends SQLite3
                         'artist'    => utf8_encode ( implode ( ' - ', $artist ) ),
                         'eventdate' => $d . '.' . $m . '.' . $y
                     ];
+
+                    $this -> cnt_eventim++;
                 }
             }
 
@@ -230,11 +246,14 @@ class koka_update extends SQLite3
         $update_events = [];
 
         if ( empty ( $current_events ) )
+        {
+            echo 'no events found';
             return false;
+        }
 
         $this -> getEventimEvents ( $current_events );
 
-        $query = 'SELECT COUNT(id) AS cnt FROM koka_events';
+        $query = 'SELECT COUNT(id) AS cnt, CASE WHEN id > 1000000 THEN "eventim" ELSE "koka" END AS provider FROM koka_events GROUP BY id > 1000000';
 
         if ( ! ( $res = $this -> query ( $query ) ) )
             die ( 'error in database query' );
@@ -242,10 +261,18 @@ class koka_update extends SQLite3
         // if we have less than 90 percent of currently known events
         // something probably went wrong... don't update
 
+        $db_counts = [];
+
         while ( $cur_count = $res -> fetchArray ( SQLITE3_ASSOC ) )
+            $db_counts [ $cur_count [ 'provider' ]] = intval ( $cur_count [ 'cnt' ] );
+
+        if (    $this -> cnt_koka    < $db_counts [ 'koka'    ] * .6
+             || $this -> cnt_eventim < $db_counts [ 'eventim' ] * .6 )
         {
-            if ( count ( $current_events ) < intval ( $cur_count [ 'cnt' ] ) * .9 )
-                return false;
+            echo 'too few events<br/>';
+            echo 'KoKa36: '  . $this -> cnt_koka    . ' pulled vs. ' . $db_counts [ 'koka'    ] . ' existing<br/>';
+            echo 'Eventim: ' . $this -> cnt_eventim . ' pulled vs. ' . $db_counts [ 'eventim' ] . ' existing<br/>';
+            return false;
         }
 
         $query = 'SELECT id, eventdate
