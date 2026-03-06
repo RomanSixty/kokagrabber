@@ -14,7 +14,7 @@ class koka_hilight extends SQLite3
         if ( empty ( $id ) )
             return;
 
-        $hilights = $this -> getHilights ();
+        $hilights = $this -> getHilights();
 
         // eintragen oder austragen?
 

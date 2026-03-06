@@ -1,0 +1,58 @@
+<?php
+
+set_include_path ( get_include_path() . PATH_SEPARATOR . '/usr/lib/phpquery' );
+
+include ( 'phpQuery.php' );
+
+class koka36
+{
+    function getEvents()
+    {
+        $events = [];
+
+        $url = 'http://www.koka36.de/events.php?kategorie=Rock%2FPop+%26+More';
+
+        while ( !empty ( $url ) )
+        {
+            try {
+                $all_events = @file_get_contents ( $url );
+            }
+            catch ( Exception $e ) {
+                return [];
+            }
+
+            if ( empty ( $all_events ) )
+                return [];
+
+            phpQuery::newDocument ( $all_events );
+
+            foreach ( pq ( '.event_box' ) as $event )
+            {
+                $link   = 'https://www.koka36.de/' . pq ( '.button_view a', pq ( $event ) ) -> attr ( 'href' );
+                $artist = trim ( pq ( '.nailthumb-container > img', pq ( $event )) -> attr ( 'alt' ) );
+
+                // sometimes there's no artist, we skip those entries
+                if ( empty ( $artist ) )
+                    continue;
+
+                preg_match ( '~_([0-9]+)\.html~i', $link, $matches );
+
+                $datum = pq ( '[style="imagefield"] > div:last', pq ( $event ) ) -> text();
+
+                $events [ $matches [ 1 ]] = [
+                    'link'      => $link,
+                    'artist'    => $artist,
+                    'eventdate' => trim ( $datum )
+                ];
+            }
+
+            // jump to next page, if there is one
+            $url = pq ('#site > div:last > a:last') -> attr ( 'href' );
+
+            if ( $url == '#' )
+                break;
+        }
+
+        return $events;
+    }
+}
