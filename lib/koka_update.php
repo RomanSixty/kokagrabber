@@ -41,7 +41,7 @@ class koka_update extends SQLite3
         $inserts = array();
 
         foreach ( $new_events as $id => $data )
-            $inserts[] = '('  . $id . ',
+            $inserts[] = '("'  . $id . '",
                            "' . htmlspecialchars ( $data [ 'artist'    ] ) . '",
                            "' . htmlspecialchars ( $data [ 'link'      ] ) . '",
                            "' . htmlspecialchars ( $data [ 'eventdate' ] ) . '",
@@ -134,7 +134,7 @@ class koka_update extends SQLite3
         {
             $query = 'UPDATE koka_events
                       SET lastseendate = ' . time() . '
-                      WHERE id IN (' . implode ( ',', $update_times ) . ')';
+                      WHERE id IN ("' . implode ( '","', $update_times ) . '")';
 
             $this -> exec ( $query );
         }

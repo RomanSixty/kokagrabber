@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS koka_events (
-	id INTEGER PRIMARY KEY,
+	id TEXT PRIMARY KEY,
 	artist TEXT,
 	link TEXT,
 	createdate INTEGER DEFAULT 0,
