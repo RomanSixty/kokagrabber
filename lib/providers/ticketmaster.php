@@ -87,6 +87,7 @@ class ticketmaster
                              || strstr ( $part, 'Live' )
                              || strstr ( $part, 'Logen' )
                              || strstr ( $part, 'Premium' )
+                             || strstr ( $part, 'UK/EU' )
                              || strstr ( $part, 'VIP' ) )
                         {
                             if ( $key == 0 )
