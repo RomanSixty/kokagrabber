@@ -12,21 +12,20 @@ class koka_update extends SQLite3
         $this -> exec ( file_get_contents ( DIR . '/sql/koka_events.sql' ) );
     }
 
-    private function updateNecessary()
+    private function updateNecessary ( $provider, $update_frequency )
     {
         if ( !empty ( $_GET [ 'force_refresh' ] ) )
             return true;
 
-        $res = $this -> query ( 'SELECT sval FROM koka_settings WHERE skey = "last_update"' );
+        $res = $this -> query ( 'SELECT sval FROM koka_settings WHERE skey = "last_update_' . $provider . '"' );
 
         if ( $found = $res -> fetchArray ( SQLITE3_ASSOC ) )
         {
-            // we only update every 3 hours
-            return ( $found [ 'sval' ] <= time() - 3*3600 );
+            return ( $found [ 'sval' ] <= time() - $update_frequency );
         }
         else
         {
-            $this -> exec ( 'INSERT INTO koka_settings(skey, sval) VALUES ("last_update", 0)' );
+            $this -> exec ( 'INSERT INTO koka_settings(skey, sval) VALUES ("last_update_' . $provider . '", 0)' );
 
             return true;
         }
@@ -78,11 +77,11 @@ class koka_update extends SQLite3
      */
     public function update()
     {
-        if ( !$this -> updateNecessary() )
-            return;
-
         foreach ( $this -> getProviders() as $provider_name => $provider )
         {
+            if ( !$this -> updateNecessary ( $provider_name, $provider -> updateFrequency() ) )
+                continue;
+
             $events = $provider -> getEvents();
 
             $event_count = $this -> getEventCount ( $provider_name );
@@ -91,14 +90,14 @@ class koka_update extends SQLite3
                 echo 'too few events for ' . $provider_name . ': ' . count ( $events ) . ' pulled vs. ' . $event_count . ' existing<br/>';
             else
                 $this -> dbUpdate ( $events, $provider_name );
-        }
 
-        // mark last update time
-        $query = 'UPDATE koka_settings
+            // mark last update time
+            $query = 'UPDATE koka_settings
                  SET sval = ' . time() . '
-                 WHERE skey = "last_update"';
+                 WHERE skey = "last_update_' . $provider_name . '"';
 
-        $this -> exec ( $query );
+            $this -> exec ( $query );
+        }
     }
 
     /**
@@ -134,7 +133,8 @@ class koka_update extends SQLite3
         {
             $query = 'UPDATE koka_events
                       SET lastseendate = ' . time() . '
-                      WHERE id IN ("' . implode ( '","', $update_times ) . '")';
+                      WHERE id IN ("' . implode ( '","', $update_times ) . '")
+                        AND provider = "' . $provider . '"';
 
             $this -> exec ( $query );
         }
@@ -143,7 +143,10 @@ class koka_update extends SQLite3
         if ( count ( $update_events ) )
         {
             foreach ( $update_events as $id => $eventdate )
-                $this -> exec ( 'UPDATE koka_events SET eventdate = "' . $eventdate . '" WHERE id = ' . $id );
+                $this -> exec ( 'UPDATE koka_events
+                                 SET eventdate = "' . $eventdate . '"
+                                 WHERE id = ' . $id . '
+                                   AND provider = "' . $provider . '"' );
         }
 
         $this -> insert ( $current_events, $provider );

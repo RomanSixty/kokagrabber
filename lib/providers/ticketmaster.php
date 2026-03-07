@@ -2,6 +2,12 @@
 
 class ticketmaster
 {
+    function updateFrequency()
+    {
+        // 3 hours
+        return 3*3600;
+    }
+
     function getEvents()
     {
         $events = [];
