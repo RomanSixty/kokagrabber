@@ -7,6 +7,7 @@ KoKaGrabber is a simple project to grab the event list from several concert tick
 The following providers are included:
 
 * koka36.de (R.I.P.)
+* 36 Concerts
 * Eventim
 * LoveYourArtist
 * MyTicket
