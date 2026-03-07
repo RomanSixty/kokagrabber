@@ -26,10 +26,14 @@ class myticket
                 if ( $concert [ 'venueCity' ] != 'Berlin' )
                     continue;
 
+                $date = substr ( $concert [ 'startDateTime' ], 0, 10 );
+
+                list ( $y, $m, $d ) = explode ( '-', $date );
+
                 $events [ $concert [ 'id' ]] = [
                     'link'      => $concert [ 'link' ],
                     'artist'    => utf8_encode ( $event [ 'artist' ] ),
-                    'eventdate' => substr ( $concert [ 'startDateTime' ], 0, 10 )
+                    'eventdate' => $d . '.' . $m . '.' . $y
                 ];
             }
         }
