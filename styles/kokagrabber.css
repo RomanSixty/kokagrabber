@@ -5,6 +5,10 @@
   margin: 0;
 }
 
+body {
+  padding: 55px 0 10px 10px;
+}
+
 header {
   padding: 10px;
   position: fixed;
@@ -19,31 +23,30 @@ header {
   flex-flow: row nowrap;
   justify-content: space-between;
   align-content: center;
-}
 
-header h1 {
-  font-size: 20px;
-  vertical-align: middle;
-  font-family: sans-serif;
-}
+  h1 {
+    font-size: 20px;
+    vertical-align: middle;
+    font-family: sans-serif;
+  }
 
-header .refresh {
-  font-size: 20px;
-}
+  .refresh {
+    font-size: 20px;
+  }
 
-header > div {
-  line-height: 27px;
+  > div {
+    line-height: 27px;
+  }
 }
 
 fieldset.filters,
 fieldset.sort {
   width: 30%;
   border: 0;
-}
 
-fieldset.filters button.active,
-fieldset.sort button.active {
-  outline: 2px solid #c00;
+  button.active {
+    outline: 2px solid #c00;
+  }
 }
 
 legend {
@@ -51,24 +54,50 @@ legend {
   float: left;
   padding: 5px;
   font-weight: bold;
-}
 
-legend:after {
-  content: ":";
-}
-
-
-body {
-  padding: 55px 0 10px 10px;
+  &:after {
+    content: ":";
+  }
 }
 
 ul.events {
-  -moz-column-width: 250px;
-  -moz-column-gap: 10px;
   column-width: 250px;
   column-gap: 10px;
   padding: 0;
   margin: 0;
+
+  li {
+    position: relative;
+    padding-left: 40px;
+
+    img {
+      position: absolute;
+      top: 3px;
+      left: 15px;
+    }
+
+    &:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      width: 10px;
+      top: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, .3);
+      cursor: pointer;
+      border-right: 1px solid #fff;
+    }
+
+    &:nth-of-type(2n-1) {
+      background: #ccc;
+    }
+
+    a small {
+      text-transform: none;
+      float: right;
+      padding-left: 15px;
+    }
+  }
 }
 
 ul.events li,
@@ -84,43 +113,21 @@ fieldset.sort button {
   padding-left: 10px;
 }
 
-ul.events li:before {
-  content: '';
-  position: absolute;
-  left: 0;
-  width: 10px;
-  top: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, .3);
-  cursor: pointer;
-  border-right: 1px solid #fff;
-}
-
-ul.events li:nth-of-type(2n-1) {
-  background: #ccc;
-}
-
 a {
   color: #333;
   text-decoration: none;
-}
 
-a:hover {
-  text-decoration: underline;
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 ul.events li a,
 fieldset.filters button,
 fieldset.sort button {
   display: block;
-  padding: 3px 10px;
+  padding: 3px 10px 3px 25px;
   min-height: 15px;
-}
-
-ul.events li a small {
-  text-transform: none;
-  float: right;
-  padding-left: 15px;
 }
 
 ul.events li.new,

@@ -50,11 +50,12 @@ class koka_view extends SQLite3
             $html = file_get_contents ( DIR . '/templates/listentry.html' );
 
         $replacements = [
-            '%%%ID%%%'      => $event [ 'id'        ],
-            '%%%LINK%%%'    => $event [ 'link'      ],
-            '%%%ARTIST%%%'  => utf8_decode ( $event [ 'artist'    ] ),
-            '%%%DATUM%%%'   => $event [ 'eventdate' ],
-            '%%%CLASSES%%%' => $event [ 'classes'   ]
+            '%%%ID%%%'       => $event [ 'id'        ],
+            '%%%LINK%%%'     => $event [ 'link'      ],
+            '%%%ARTIST%%%'   => utf8_decode ( $event [ 'artist' ] ),
+            '%%%DATUM%%%'    => $event [ 'eventdate' ],
+            '%%%CLASSES%%%'  => $event [ 'classes'   ],
+            '%%%PROVIDER%%%' => $event [ 'provider'  ],
         ];
 
         $datum_normalized = preg_replace ( '~^[^0-9.]+~', '', $event [ 'eventdate' ] );
