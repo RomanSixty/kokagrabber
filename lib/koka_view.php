@@ -34,7 +34,7 @@ class koka_view extends SQLite3
 
     private function getLastUpdate()
     {
-        $res = $this -> query ( 'SELECT sval FROM koka_settings WHERE skey LIKE "last_update_%" ORDER BY sval DESC LIMIT 0,1' );
+        $res = $this -> query ( 'SELECT sval FROM koka_settings WHERE skey LIKE "last_update_%" ORDER BY CAST(sval AS decimal) LIMIT 0,1' );
 
         if ( $found = $res -> fetchArray ( SQLITE3_ASSOC ) )
             return $found [ 'sval' ];

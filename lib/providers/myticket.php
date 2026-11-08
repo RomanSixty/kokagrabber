@@ -1,20 +1,14 @@
 <?php
 
-class myticket
+class myticket extends koka_provider
 {
-    function updateFrequency()
-    {
-        // 12 hours
-        return 12*3600;
-    }
-
     function getEvents()
     {
         $events = [];
 
         $data = $this -> getJSON ( 'https://www.myticket.de/de/api/tourfilter/all/berlin/all/all/0/1000' );
 
-        if ( count ( $data [ 'tours' ] ) == 0 )
+        if ( !isset ( $data [ 'tours' ] ) || count ( $data [ 'tours' ] ) == 0 )
             return [];
 
         foreach ( $data [ 'tours' ] as $event )
@@ -24,7 +18,7 @@ class myticket
             // event details must be requested from tour API
             $ev_data = $this -> getJSON ( 'https://www.myticket.de/de/api/tour/' . $tour_id );
 
-            if ( count ( $ev_data [ 'events' ] ) == 0 )
+            if ( !isset ( $ev_data [ 'events' ] ) || count ( $ev_data [ 'events' ] ) == 0 )
                 continue;
 
             foreach ( $ev_data [ 'events' ] as $concert )
@@ -32,15 +26,18 @@ class myticket
                 if ( $concert [ 'venueCity' ] != 'Berlin' )
                     continue;
 
-                $date = substr ( $concert [ 'startDateTime' ], 0, 10 );
+                if ( !empty ( $concert [ 'startDateTime' ] ) )
+                {
+                    $date = substr ( $concert [ 'startDateTime' ], 0, 10 );
 
-                list ( $y, $m, $d ) = explode ( '-', $date );
+                    list ( $y, $m, $d ) = explode ( '-', $date );
 
-                $events [ $concert [ 'id' ]] = [
-                    'link'      => $concert [ 'link' ],
-                    'artist'    => utf8_encode ( $event [ 'artist' ] ),
-                    'eventdate' => $d . '.' . $m . '.' . $y
-                ];
+                    $events [ $concert [ 'id' ]] = [
+                        'link'      => $concert [ 'link' ],
+                        'artist'    => utf8_encode ( $event [ 'artist' ] ),
+                        'eventdate' => $d . '.' . $m . '.' . $y
+                    ];
+                }
             }
         }
 

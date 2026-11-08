@@ -1,10 +1,9 @@
 <?php
 
+require __DIR__ . '/koka_provider.php';
+
 class koka_update extends SQLite3
 {
-    var $cnt_koka = 0;
-    var $cnt_eventim = 0;
-
     function __construct()
     {
         $this -> open ( DIR . '/db/kokacache.sqlite' );
@@ -34,6 +33,7 @@ class koka_update extends SQLite3
     /**
      * insert new DB entries
      * @param array $new_events event data
+     * @param object $provider
      */
     private function insert ( $new_events, $provider )
     {
@@ -86,7 +86,9 @@ class koka_update extends SQLite3
 
             $event_count = $this -> getEventCount ( $provider_name );
 
-            if ( $event_count * .5 > count ( $events ) )
+            $threshold_factor = $provider -> factor() ?? .8;
+
+            if ( $event_count * $threshold_factor > count ( $events ) )
                 echo 'too few events for ' . $provider_name . ': ' . count ( $events ) . ' pulled vs. ' . $event_count . ' existing<br/>';
             else
                 $this -> dbUpdate ( $events, $provider_name );
@@ -145,7 +147,7 @@ class koka_update extends SQLite3
             foreach ( $update_events as $id => $eventdate )
                 $this -> exec ( 'UPDATE koka_events
                                  SET eventdate = "' . $eventdate . '"
-                                 WHERE id = ' . $id . '
+                                 WHERE id = "' . $id . '"
                                    AND provider = "' . $provider . '"' );
         }
 

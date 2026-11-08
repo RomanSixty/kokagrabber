@@ -1,18 +1,22 @@
 <?php
 
-class loveyourartist
+class loveyourartist extends koka_provider
 {
-    function updateFrequency()
+    function factor()
     {
-        // 12 hours
-        return 12 * 3600;
+        return .2;
+    }
+
+    function updateFrequency ()
+    {
+        return 60;
     }
 
     function getEvents()
     {
         $events = [];
 
-        $url = 'https://prod.loveyourartist.com/api/v1/store/search';
+        $url = 'https://prod.loveyourartist.com/api/v1/store/events?pageSize=1000&filter[category][$in]=Concerts%20%26%20Festivals&filter[venue.location][$geoWithin][$centerSphere]=[[13.404954,52.52000659999999],0.007839325190887567]';
 
         try {
             $ch = curl_init();
@@ -32,9 +36,6 @@ class loveyourartist
                 'Content-Type: application/json',
                 'DNT: 1'
             ]);
-
-            curl_setopt ( $ch, CURLOPT_POST, 1 );
-            curl_setopt ( $ch, CURLOPT_POSTFIELDS, json_encode ( [ 'maxHits' => 1000, 'query' => 'berlin', 'type' => 'FullSearch' ] ) );
 
             $all_events = curl_exec ( $ch );
 
@@ -58,12 +59,9 @@ class loveyourartist
             return [];
         }
 
-        if ( empty ( $data [ 'events' ][ 'hits' ] ) )
-            return [];
-
-        foreach ( $data [ 'events' ][ 'hits' ] as $event )
+        foreach ( $data as $event )
         {
-            if ( $event [ 'category' ] != 'Concerts & Festivals' || !empty ( $event [ 'canceled' ] ) || $event [ 'venue' ][ 'city' ] != 'Berlin' )
+            if ( !empty ( $event [ 'canceled' ] ) || $event [ 'venue' ][ 'city' ] != 'Berlin' )
                 continue;
 
             foreach ( $event [ 'schedule' ] as $concert )

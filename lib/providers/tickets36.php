@@ -1,6 +1,6 @@
 <?php
 
-class tickets36
+class tickets36 extends koka_provider
 {
     function updateFrequency()
     {

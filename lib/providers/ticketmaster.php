@@ -1,6 +1,6 @@
 <?php
 
-class ticketmaster
+class ticketmaster extends koka_provider
 {
     function updateFrequency()
     {
@@ -63,7 +63,7 @@ class ticketmaster
 
             foreach ( $data [ 'events' ] as $event )
             {
-                if ( $event [ 'cancelled' ] || $event [ 'virtual' ] )
+                if ( $event [ 'cancelled' ] || $event [ 'virtual' ] || empty ( $event [ 'dates' ][ 'startDate' ] ) )
                     continue;
 
                 $date = substr ( $event [ 'dates' ][ 'startDate' ], 0, 10 );
